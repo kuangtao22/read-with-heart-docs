@@ -146,3 +146,20 @@ return `${data.image}, {
 ```
 
 **说明：** 此配置用于浏览器过盾场景，允许跨域获取指定域名的Cookie信息。
+
+### loginUrl 本地 HTML 页 openParams 写法速查
+
+以下规则用于 `loginUrl` 的 `@html:` 本地登录/配置页。写回能力以 ParsingBook 主项目当前实现为准：宿主在本地 HTML 加载前注入 `window.ParsingBook.setOpenParamValue` / `setOpenParamValues`，并只展开 HTML 事件属性中的 `@setOpenParams(...)`。
+
+| 写法 | 是否可用 | 适用场景 | 示例 | 注意事项 |
+|:---|:---|:---|:---|:---|
+| `@{openParams.key}` | 可用 | 加载前读取当前生效值 | `@{openParams.line}` | 由规则/HTML 预处理替换；页面运行后不会自动重新求值。 |
+| `@{openParams.key.type}` / `@{openParams.key.options}` | 可用 | 加载前读取开放参数结构信息 | `@{openParams.line.options}` | 只暴露最小结构信息；不要依赖 `value`、`defaultValue`、`displayValue` 等内部字段。 |
+| `onclick="@setOpenParams('key','value')"` | 可用 | HTML 事件属性中写回固定值 | `<button onclick="@setOpenParams('line','v1')">保存</button>` | 当前宏展开器只处理事件属性中的 `@setOpenParams(...)`。 |
+| `onclick='@setOpenParams("key", document.getElementById("x").value)'` | 可用 | HTML 事件属性中执行 DOM 表达式后写回 | `<button onclick='@setOpenParams("line", document.getElementById("line").value)'>保存</button>` | Swift 不解析表达式；浏览器执行后 Native 接收最终值。 |
+| `window.ParsingBook.setOpenParamValue(k, value)` | 可用，推荐 | JS 函数内使用运行时变量动态写回 | `window.ParsingBook.setOpenParamValue(k, value)` | 脚本函数里应优先直接调用 bridge，不要绕宏。 |
+| `window.ParsingBook.setOpenParamValues({ a: '1', b: '2' })` | 可用 | JS 运行时批量写回多个参数 | `window.ParsingBook.setOpenParamValues({ line: 'v1', source: '全部' })` | 内部逐个调用 `setOpenParamValue`。 |
+| 宿主注入别名后 `setOpenParams(k, v)` | 可用 | 给规则作者提供更短、更自然的 JS API | `setOpenParams(k, v)` | 需要宿主先注入 `window.setOpenParams = function(key, value) { window.ParsingBook.setOpenParamValue(key, value); }`。 |
+| `` `@{setOpenParams('${k}', '${v}')}` `` | 不可用 | 不应使用 | `` `@{setOpenParams('${k}', '${v}')}` `` | JS 模板字符串运行在页面加载后，不会触发 Swift 宏重新扫描；`${k}` / `${v}` 不会动态映射。 |
+| `<script>@setOpenParams('key','value')</script>` | 当前不支持/不推荐 | 不应作为写回方式 | `<script>@setOpenParams('line','v1')</script>` | 现有宏展开器只处理事件属性，不处理 script 中裸宏。 |
+| 普通 HTML 文本节点里的 `@setOpenParams(...)` | 不可用/不推荐 | 不应使用 | `<div>@setOpenParams('line','v1')</div>` | 不是事件执行上下文，只会成为文本或被错误展示。 |
