@@ -415,7 +415,21 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 !!! warning "注意"
     图片标签必须是**自闭合**的（以 `/>` 结尾）
 
-### 2. 示例
+### 2. 属性规则
+
+| 属性 | 是否必填 | 说明 |
+|------|----------|------|
+| `src` | 是 | 图片地址。为空时不会创建图片占位。 |
+| `width` | 推荐 | 图片显示宽度，支持纯数字、`px`、小数和百分比。 |
+| `height` | 推荐 | 图片显示高度，支持纯数字、`px`、小数和百分比。 |
+| `ident` | 否 | 点击图片时打开的 WebView 地址。为空时图片只展示，不拦截翻页点击。 |
+| `alt` | 否 | 图片语义说明，当前阅读绘制链路不使用。 |
+| `style` | 否 | 支持 `width` / `height`，如 `style="width:300px;height:40px"`。 |
+
+!!! tip "分页稳定性"
+    建议同时填写 `width` 和 `height`。明确同时填写时，App 会把它们作为最终显示尺寸，只在超过阅读区域时等比缩小，不会自动放大。
+
+### 3. 示例
 
 #### 指定尺寸
 
@@ -427,14 +441,16 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 - 图片会按指定尺寸显示
 - 如果超出屏幕宽度，会自动缩放
 
-#### 仅指定宽度
+#### 不推荐仅指定宽度
 
 ```html
-<img src="https://example.com/banner.jpg" width="800" height="0" />
+<img src="https://example.com/banner.jpg" width="800" />
 ```
 
 **说明**：
-- `height="0"` 表示按比例自动计算高度
+- 网络图片或网络 SVG 首次分页时，App 通常无法同步获取真实高度
+- 只写 `width` 或 `height` 时会进入现有尺寸兜底逻辑，可能不是服务端期望比例
+- 为避免加载后高度变化影响分页，正文规则应尽量同时输出 `width` 和 `height`
 
 #### 网络图片
 
@@ -447,7 +463,39 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 - 加载时显示占位符
 - 失败时显示灰色占位图
 
-### 3. 图片位置
+#### SVG 图片
+
+```html
+<img
+  src="https://example.com/comment/card?bookId=1&chapterId=2&svg=1&img=1"
+  width="300"
+  height="40" />
+```
+
+**说明**：
+- SVG 继续使用 `<img>` 标签，不支持正文内联 `<svg>...</svg>`
+- 支持 `.svg` 地址、`data:image/svg+xml`、URL query 中包含 `svg=1` 的接口图片
+- 网络响应 MIME 为 `image/svg+xml` 或数据内容像 SVG XML 时，也会按 SVG 渲染
+- SVG 会渲染为静态图片，不支持动画和脚本
+- 网络 SVG 必须显式写 `width` 和 `height`，避免影响分页
+
+#### 可点击图片
+
+```html
+<img
+  ident="https://example.com/chapterComments?bookId=1&chapterId=2"
+  src="https://example.com/chapterEndComments?bookId=1&chapterId=2&page=1&svg=1&img=1"
+  alt="本章讨论"
+  width="300"
+  height="40" />
+```
+
+**说明**：
+- `ident` 非空时，点击图片会打开对应 WebView
+- `ident` 应是可解析的完整 URL
+- 点击带 `ident` 的图片后，不再继续执行翻页点击
+
+### 4. 图片位置
 
 #### 独立段落
 
@@ -473,7 +521,7 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 
 **效果**：图片嵌入在段落中
 
-### 4. 图片尺寸建议
+### 5. 图片尺寸建议
 
 | 场景 | 推荐宽度 | 说明 |
 |------|---------|------|
@@ -485,6 +533,7 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 !!! tip "性能提示"
     - 图片会自动缓存，无需担心重复加载
     - 超大图片会自动按屏幕宽度缩放
+    - 网络 SVG 和带 `ident` 的入口图属于正文交互规则，必须提供稳定宽高
     - 建议使用 CDN 或图床服务
 
 ---
@@ -500,7 +549,17 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 !!! warning "注意"
     段评标签必须是**自闭合**的（以 `/>` 结尾）
 
-### 2. 示例
+### 2. 属性规则
+
+| 属性 | 是否必填 | 说明 |
+|------|----------|------|
+| `ident` | 否 | 段落标识。点击段评按钮时会作为 `paragraphIdent` 传给后续处理逻辑。 |
+| `count` | 否 | 评论数，默认 `0`。只有解析为整数且大于 `0` 时才会显示段评按钮。 |
+
+!!! note "显示条件"
+    段评功能关闭时会忽略所有 `<comment>` 标签；`count` 缺失、为 `0`、小于 `0` 或无法解析为整数时，不会插入按钮。
+
+### 3. 示例
 
 #### 基础用法
 
@@ -511,6 +570,7 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 **效果**：
 - 段落末尾显示 `[5条评论]` 按钮
 - 点击按钮触发回调，传递 `paragraphIndex` 和 `paragraphIdent`
+- 段评按钮点击优先于普通翻页点击
 
 #### 不指定 ident
 
@@ -521,6 +581,16 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 **效果**：
 - 仅通过 `paragraphIndex` 识别段落
 - 适合简单场景
+
+#### count 为 0
+
+```html
+<p>这段没有评论。<comment ident="para_empty" count="0" /></p>
+```
+
+**效果**：
+- 不显示段评按钮
+- 不占用分页空间
 
 #### 复杂示例
 
@@ -547,83 +617,16 @@ background-color: #f0f0f0;   /* 浅灰背景 */
 - 样式化的对话 + 段评按钮
 - 完美融合
 
-### 3. 启用段评功能
+### 4. 书源侧输出规则
 
-#### 方式一：使用测试辅助类（推荐）
-
-```swift
-import CommentTestHelper
-
-// 在 AppDelegate 或启动时调用
-CommentTestHelper.enableCommentTest(autoMode: true)
-```
-
-**说明**：
-- `autoMode: true` - 所有章节自动有模拟评论数据
-- 适合开发测试
-
-#### 方式二：手动配置
-
-```swift
-// 1. 启用段评功能
-RichContentConfig.shared.enableCommentButton = true
-
-// 2. 设置数据源
-CatalogMemory.shared.commentDataSource = YourCommentDataSource()
-
-// 3. 实现数据源协议
-class YourCommentDataSource: ParagraphCommentDataSource {
-    func getCommentCounts(bookId: Int, catalogId: Int) -> [Int: Int] {
-        // 返回 [段落索引: 评论数] 字典
-        return [
-            0: 5,
-            1: 12,
-            2: 8
-        ]
-    }
-}
-```
-
-**说明**：
-- 适合生产环境
-- 数据源由后端提供
-
-#### 方式三：关闭段评
-
-```swift
-CommentTestHelper.disableCommentTest()
-```
-
-### 4. 段评回调
-
-```swift
-// 在阅读页面实现协议
-extension BookReadViewController: ParagraphCommentDelegate {
-    func didTapCommentButton(
-        paragraphIndex: Int,
-        paragraphIdent: String?,
-        commentCount: Int
-    ) {
-        print("点击了段评按钮")
-        print("段落索引: \(paragraphIndex)")
-        print("段落ID: \(paragraphIdent ?? "无")")
-        print("评论数: \(commentCount)")
-        
-        // 跳转到评论页面
-        // ...
-    }
-}
-```
+- 书源只需要在正文字符串中输出 `<comment ... />` 标签，不需要写任何 App 内部代码。
+- `ident` 建议使用能稳定定位段落的业务 ID，例如 `chapter1_para_001`、`dlg_zhangfei_001`。
+- `count` 应由书源或接口返回的评论数填入；没有评论时可以不输出 `<comment>`，或输出 `count="0"`。
+- 段评是否最终显示，还会受 App 内部段评开关影响；书源侧只负责提供标签和评论数。
 
 ### 5. 段评样式
 
-段评按钮样式会自动跟随阅读主题：
-
-- 颜色：跟随主题颜色（日间/夜间）
-- 字体：系统字体 14pt
-- 圆角：4pt
-- 边框：1pt 实线
-- 内边距：4pt 横向，2pt 纵向
+段评按钮样式由 App 阅读主题和段评图标配置决定，书源正文中不需要额外写 CSS 控制按钮样式。
 
 ---
 
