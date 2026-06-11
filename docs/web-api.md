@@ -4,6 +4,12 @@
 > 
 > 本文档介绍如何使用 Web API 与用心读书 APP 进行交互，实现书源的创建、编辑、调试和管理。
 
+## 文档边界
+
+- 本文档描述的是基于 v1 接口形态的 Web 写源 API；它是历史参考，不应当成 ParsingBook 当前 V2 规则实现的最新管理入口。
+- V2 规则管理仍以 ParsingBook App 前端书源配置为准；如需新增字段，应优先反馈到 `mcp-parsingbook-rules-nodejs` 仓库的 schema 文档，不要直接改这份接口文档当成新协议。
+- 接口参数以 App 端实际接受为准；本档示例和 V2 字段之间如有差异，以 App 端字段为准。
+
 ---
 
 ## 📖 目录
@@ -79,7 +85,7 @@ POST /api/site/list
 Content-Type: application/json
 
 {
-  "keyword": "起点",
+  "keyword": "示例",
   "groupId": 1
 }
 ```
@@ -93,8 +99,8 @@ Content-Type: application/json
   "data": [
     {
       "id": 1,
-      "name": "起点中文网",
-      "host": "https://www.qidian.com",
+      "name": "示例阅读站",
+      "host": "https://novel.example.org",
       "index": 100,
       "groupId": 1,
       "status": 1,
@@ -180,8 +186,8 @@ Content-Type: application/json
   "message": "成功",
   "data": {
     "id": 1,
-    "name": "起点中文网",
-    "host": "https://www.qidian.com",
+    "name": "示例阅读站",
+    "host": "https://novel.example.org",
     "siteJson": "{...书源JSON规则...}",
     "index": 100,
     "groupId": 1,
@@ -306,8 +312,8 @@ Content-Type: application/json
   "code": 200,
   "message": "成功",
   "data": {
-    "name": "起点中文网",
-    "host": "https://www.qidian.com",
+    "name": "示例阅读站",
+    "host": "https://novel.example.org",
     "search": {...},
     "detail": {...},
     "catalog": {...},
@@ -810,7 +816,7 @@ def clear_debug_log(clear_type, site_ident=None):
 curl -X POST "http://localhost:8080/api/site/list" \
   -H "Content-Type: application/json" \
   -d '{
-    "keyword": "起点",
+    "keyword": "示例",
     "groupId": 1
   }'
 
@@ -1013,7 +1019,7 @@ console.log('正文内容:', contentResult.data.content);
 
 ```javascript
 // 获取书源列表
-const list = await getSiteList('起点', 1);
+const list = await getSiteList('示例', 1);
 
 // 获取书源详情
 const detail = await fetch('http://localhost:8080/api/site/info', {

@@ -89,6 +89,18 @@ ws.binary((data) => {
 return 'socket';
 ```
 
+#### WebSocket 规则协议表
+
+| 项目 | 协议 | 说明 |
+| --- | --- | --- |
+| 返回值 | 必须 `return 'socket'` | 告诉 App 这是 WebSocket 规则，不要当作普通 POST。 |
+| 接收文本 | `ws.open((text) => { ... })` | 文本消息回调；字符串可能是 JSON，需要自行解析。 |
+| 接收二进制 | `ws.binary((data) => { ... })` | 二进制回调；典型用于直接推送音频。 |
+| 推送音频 | `ws.push(data)` | 把处理后的音频块推回 App。 |
+| 正常结束 | `ws.finished()` | 表示本轮文本已经播完；调用后再决定是否 `ws.close()`。 |
+| 中断 / 异常 | `ws.close()` | 关闭连接，不表示正常播完。 |
+| 失败回执 | 不要把 `finished()` 当作“关闭连接” | `finished()` 仅说明服务端正常返回完毕，连接仍需 `close()`。 |
+
 ## 角色配置
 
 ### 参数

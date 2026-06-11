@@ -1,4 +1,4 @@
-# 规则
+# 规则说明
 
 ## 协议边界
 
@@ -245,7 +245,7 @@ return `${data.image}, {
 ```json
 {
   "domains": [
-    "qidian.com",
+    "novel.example.org",
     "example.com"
   ]
 }
@@ -327,7 +327,7 @@ const tags = (config.openParams.tags ?? '').split(',').filter(Boolean);
 `loginUrl` 使用 `@html:` 本地 HTML 时，也可以像普通登录 URL 一样在末尾追加 JSON 配置：
 
 ```
-@html:<html>...</html>,{"domains":["qidian.com","example.com"]}
+@html:<html>...</html>,{"domains":["novel.example.org","example.com"]}
 ```
 
 `domains` 用于额外收集指定域名范围内的内置浏览器 Cookie。建议填写裸域名或 host；URL 形式也会自动归一化为 host。
