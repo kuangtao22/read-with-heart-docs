@@ -90,6 +90,7 @@ JSONPath 规则最终会返回可用于后续字段的值：
     "engine": "jsonpath",
     "bookList": "$.data.list",
     "bookName": "$.name",
+    "aliasName": "$.aliasName",
     "bookAuthor": "$.author",
     "bookUrl": "$.url",
     "ruleExtra": {
@@ -99,6 +100,8 @@ JSONPath 规则最终会返回可用于后续字段的值：
   }
 }
 ```
+
+`aliasName` 为可选字段，用于从搜索列表项中解析书籍别名。别名为空时不参与搜索匹配；别名非空时，精准匹配和包含匹配都会按 `bookName OR aliasName` 判断。
 
 ## 前置请求 put
 
