@@ -5,6 +5,13 @@
 
 由于app使用的是原生的写法，故采用最了基础的JS写法，不支持浏览器中的一些写法以及Node.js的写法，所以我们内置了一些比如像浏览器中操作Document的方法等。
 
+## 响应 JS 运行时
+
+- 响应 JS 仍可使用 `App.*` / `app.*` / `APP.*` 一致别名访问 Native 能力，详细见 [Native to Javascript](../native-to-js.md)。
+- 当前响应 JS 仅暴露 `Document` 子集（`v2.6.0+`），不要把它当成完整的桥接 API；规则作者需要的能力若超出 `Document` 子集，应放到前置请求 JS 中实现。
+- 响应 JS 不会自动拿到前置请求的 Put 存储；如需读前置产物，使用 `@get{}` 读取，或者在 JS 里用 `app.sp.get(key)`。
+- 响应 JS 里不要依赖 `@put{}` / `@tools{}` 之外的“运行时通用存储”，按场景用 `@get{}` 和 JS 桥接。
+
 ### Document的处理
 `v2.6.0 以上版本支持`
 
