@@ -79,7 +79,7 @@
 
 | 字段 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `engine` | String | `xpath` | `put` 解析使用的引擎，支持 `xpath`、`jsonpath`。 |
+| `engine` | String | `xpath` | `put` 解析使用的引擎，支持 `xpath`、`jsonpath`、`css`。 |
 | `respones` | String | 空 | 响应 JS 处理规则。注意字段名按现有协议写作 `respones`。 |
 | `put` | Object | 空 | 数据提取字典，key 是保存名，value 是提取规则。 |
 
@@ -346,6 +346,23 @@
 }
 ```
 
+### CSS 规则获取
+
+HTML 响应也可以把 `response.engine` 设置为 `css`，`put` 中的 value 使用 CSS selector 解析。
+
+```json
+{
+  "response": {
+    "engine": "css",
+    "put": {
+      "token": "meta[name=csrf-token]@content",
+      "userName": ".user-name@text",
+      "nextUrl": "a.next@href"
+    }
+  }
+}
+```
+
 如果 `info` 是对象，则会直接保存对象，后续可读取子路径：
 
 ```text
@@ -379,7 +396,7 @@ http://www.example.com/search?keyword=@get{info.name}
 ## 排错与注意事项
 
 - `@get{}` 读取为空时，先检查前置请求是否成功、`response.put` 是否配置、key 名是否一致。
-- JSON 响应用 `jsonpath`，HTML 响应用 `xpath`；引擎选错时，`put` 往往会提取为空。
+- JSON 响应用 `jsonpath`，HTML 响应可用 `xpath` 或 `css`；引擎选错时，`put` 往往会提取为空。
 - `filterErrorCodes` 只在 HTTP 状态码层生效，不会吞掉 JS 语法错误、解析失败或请求取消等非 HTTP 错误。
 - `domains` 主要用于登录与过盾相关的额外 Cookie 收集域名范围，不要当成所有请求通用的独立能力。
 - 自定义 `put` key 应避免和 `verifyHeader`、`verifyCookies`、`preUrlN`、`preResHeaderN`、`preRepHeaderN` 等内置 key 冲突。

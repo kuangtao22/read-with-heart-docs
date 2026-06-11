@@ -31,6 +31,9 @@ nav:
     - 关于制作源: 制作源/about.md
     - 前置请求: 制作源/pre-request.md
     - 规则说明: 制作源/rules-Introduction.md
+    - XPath规则: 制作源/rule-xpath.md
+    - JSONPath规则: 制作源/rule-jsonpath.md
+    - CSS规则: 制作源/rule-css.md
 copyright: Copyright &copy; 2024 Read With Heart
 extra:
   social:
