@@ -22,18 +22,31 @@ markdown_extensions:
       alternate_style: true
 nav:
   - 首页: index.md
-  - Native to Javascript: native-to-js.md
-  - 正文富文本规则: content-richtext.md
+  - 正文富文本:
+    - 概述: content-richtext/index.md
+    - 基础样式: content-richtext/basic.md
+    - 自定义标签:
+      - 图片: content-richtext/image.md
+      - 段评: content-richtext/comment.md
+      - 批注: content-richtext/note.md
   - 自定义TTS: rules-tts.md
-  - Web写源开放接口: web-api.md
-  - 工具: tools.md
   - 制作源:
     - 关于制作源: 制作源/about.md
     - 前置请求: 制作源/pre-request.md
     - 规则说明: 制作源/rules-Introduction.md
+    - Javascript规则: native-to-js.md
     - XPath规则: 制作源/rule-xpath.md
     - JSONPath规则: 制作源/rule-jsonpath.md
     - CSS规则: 制作源/rule-css.md
+  - Web写源开放接口:
+    - 概述: web-api/index.md
+    - 快速开始指南: web-api/quickstart.md
+    - 书源管理接口: web-api/site-management.md
+    - 书源调试接口: web-api/debug.md
+    - 辅助接口: web-api/misc.md
+    - 响应格式说明: web-api/response.md
+    - 使用示例: web-api/examples.md
+  - 工具: tools.md
 copyright: Copyright &copy; 2024 Read With Heart
 extra:
   social:
