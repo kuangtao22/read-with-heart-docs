@@ -29,7 +29,7 @@
 | `commentUrl` | 否 | 当前章节评论页面地址，详见下方专节 |
 | `method` / `params` / `header` | 否 | 请求方法、参数和场景请求头 |
 | `preRequests` | 否 | 正式正文请求前的前置请求 |
-| `request` / `response` | 否 | 请求配置 JS 与响应预处理 JS，只使用 `@js:` |
+| `request` / `response` | 否 | 请求配置 JS 与响应预处理 JS，只使用 `@js:`，详见[请求信息](request.md)、[响应信息](response.md) |
 
 ## 正文分页地址
 
